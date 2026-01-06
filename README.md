@@ -402,5 +402,5 @@ cd api
 source venv/bin/activate
 python manage.py migrate
 python manage.py create_dummy_data
-python manage.py runserver 8001
+python manage.py runserver 8000
 ```
