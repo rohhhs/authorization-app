@@ -1,0 +1,9 @@
+# virtual environment
+env
+venv
+# logs
+*.log
+# project specific
+.other/
+todo.txt
+*.bak

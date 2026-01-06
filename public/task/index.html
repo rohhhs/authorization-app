@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Список задач - Приложение Taskboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/style.css">
+<style>
+    .task-list-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+    
+    .task-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    
+    .filter-btn {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        background: white;
+        cursor: pointer;
+        border-radius: 4px;
+    }
+    
+    .filter-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+    
+    .filter-btn:hover {
+        background: #f0f0f0;
+    }
+    
+    .filter-btn.active:hover {
+        background: #0056b3;
+    }
+    
+    .tasks-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .tasks-table th,
+    .tasks-table td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .tasks-table th {
+        background: #f8f9fa;
+        font-weight: 600;
+        cursor: pointer;
+        user-select: none;
+    }
+    
+    .tasks-table th:hover {
+        background: #e9ecef;
+    }
+    
+    .tasks-table th.sortable::after {
+        content: ' ↕';
+        opacity: 0.5;
+    }
+    
+    .tasks-table th.sort-asc::after {
+        content: ' ↑';
+        opacity: 1;
+    }
+    
+    .tasks-table th.sort-desc::after {
+        content: ' ↓';
+        opacity: 1;
+    }
+    
+    .tasks-table tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .role-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .role-badge.administrator {
+        background: #dc3545;
+        color: white;
+    }
+    
+    .role-badge.moderator {
+        background: #ffc107;
+        color: #000;
+    }
+    
+    .role-badge.user {
+        background: #28a745;
+        color: white;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .status-badge.pending {
+        background: #6c757d;
+        color: white;
+    }
+    
+    .status-badge.in_progress {
+        background: #007bff;
+        color: white;
+    }
+    
+    .status-badge.done {
+        background: #28a745;
+        color: white;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #6c757d;
+    }
+    
+    .error {
+        text-align: center;
+        padding: 20px;
+        color: #dc3545;
+        background: #f8d7da;
+        border-radius: 4px;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="task-list-container">
+    <div class="task-list-header">
+        <h1>Все задачи</h1>
+    </div>
+    
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-group="all" onclick="filterByGroup('all')">Все</button>
+        <button class="filter-btn" data-group="administrator" onclick="filterByGroup('administrator')">Администратор</button>
+        <button class="filter-btn" data-group="moderator" onclick="filterByGroup('moderator')">Модератор</button>
+        <button class="filter-btn" data-group="user" onclick="filterByGroup('user')">Пользователь</button>
+    </div>
+    
+    <div id="tasksContainer">
+        <div class="loading">Загрузка задач...</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/task-list.js"></script>
+{% endblock %}

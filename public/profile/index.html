@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Профиль - Приложение Taskboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/profile.css">
+{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="container">
+        <div class="profile-header">
+            <h1>Панель управления</h1>
+            <div id="userInfo" class="user-info">
+                <p>Загрузка информации о пользователе...</p>
+            </div>
+            <button type="button" id="logoutBtn" class="btn btn-secondary">Выйти</button>
+        </div>
+        
+        <!-- Profile Section -->
+        <div class="profile-section">
+            <h2>Информация о профиле</h2>
+            <div class="profile-form-card">
+                <form id="profileForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileName">Имя</label>
+                            <input type="text" id="profileName" name="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="profileSurname">Фамилия</label>
+                            <input type="text" id="profileSurname" name="surname" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="profilePatronym">Отчество</label>
+                        <input type="text" id="profilePatronym" name="patronym">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="profileBirthDate">Дата рождения</label>
+                            <input type="date" id="profileBirthDate" name="birth_date">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileBirthPlace">Место рождения</label>
+                            <input type="text" id="profileBirthPlace" name="birth_place">
+                        </div>
+                    </div>
+                    <div id="profileError" class="error-message"></div>
+                    <button type="submit" class="btn btn-primary">Обновить профиль</button>
+                    <button type="button" id="deleteAccountBtn" class="btn btn-danger">Удалить аккаунт</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Email Change Section -->
+        <div class="profile-section">
+            <h2>Изменить Email</h2>
+            <div class="profile-form-card">
+                <form id="emailChangeForm">
+                    <div class="form-group">
+                        <label for="currentEmail">Текущий Email</label>
+                        <input type="email" id="currentEmail" name="current_email" readonly disabled>
+                    </div>
+                    <div class="form-group">
+                        <label for="newEmail">Новый Email</label>
+                        <input type="email" id="newEmail" name="new_email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="emailPassword">Пароль</label>
+                        <input type="password" id="emailPassword" name="password" required placeholder="Введите пароль для подтверждения">
+                    </div>
+                    <div id="emailError" class="error-message"></div>
+                    <button type="submit" class="btn btn-primary">Изменить Email</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Password Change Section -->
+        <div class="profile-section">
+            <h2>Изменить пароль</h2>
+            <div class="profile-form-card">
+                <form id="passwordChangeForm">
+                    <div class="form-group">
+                        <label for="oldPassword">Старый пароль</label>
+                        <input type="password" id="oldPassword" name="old_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">Новый пароль</label>
+                        <input type="password" id="newPassword" name="new_password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPasswordRepeat">Подтвердите новый пароль</label>
+                        <input type="password" id="newPasswordRepeat" name="new_password_repeat" required>
+                    </div>
+                    <div id="passwordError" class="error-message"></div>
+                    <button type="submit" class="btn btn-primary">Изменить пароль</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Tasks Section -->
+        <div class="tasks-section">
+            <h2>Задачи</h2>
+            <div class="task-form-card">
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Название задачи</label>
+                        <input type="text" id="taskTitle" name="title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDescription">Описание</label>
+                        <textarea id="taskDescription" name="description" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Создать задачу</button>
+                </form>
+            </div>
+            
+            <div id="tasksList" class="tasks-list">
+                <p>Загрузка задач...</p>
+            </div>
+        </div>
+        
+        <!-- Administrator Section -->
+        <div id="adminSection" class="admin-section" style="display: none;">
+            <h2>Управление пользователями</h2>
+            <div id="usersList" class="users-list">
+                <p>Загрузка пользователей...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/js/auth.js"></script>
+<script src="/static/js/tasks.js"></script>
+<script src="/static/js/profile.js"></script>
+<script src="/static/js/admin.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize profile page
+        initProfilePage();
+        
+        // Task form handler
+        const taskForm = document.getElementById('taskForm');
+        if (taskForm) {
+            taskForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                createTask();
+            });
+        }
+        
+        // Profile form handler
+        const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                updateProfile();
+            });
+        }
+        
+        // Email change form handler
+        const emailChangeForm = document.getElementById('emailChangeForm');
+        if (emailChangeForm) {
+            emailChangeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                changeEmail();
+            });
+        }
+        
+        // Password change form handler
+        const passwordChangeForm = document.getElementById('passwordChangeForm');
+        if (passwordChangeForm) {
+            passwordChangeForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                changePassword();
+            });
+        }
+        
+        // Delete account handler
+        const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+        if (deleteAccountBtn) {
+            deleteAccountBtn.addEventListener('click', function() {
+                if (confirm('Вы уверены, что хотите удалить свой аккаунт? Это действие нельзя отменить.')) {
+                    deleteAccount();
+                }
+            });
+        }
+        
+        // Logout button handler
+        const logoutBtn = document.getElementById('logoutBtn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function() {
+                logout();
+            });
+        }
+    });
+</script>
+{% endblock %}
